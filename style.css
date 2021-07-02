@@ -1,0 +1,18 @@
+:root {
+  --font-size: 16px;
+  --font-color: black;
+  --bg-color: azure;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-color);
+}
