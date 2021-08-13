@@ -7,16 +7,20 @@
   <title>Retroarch Cheat Builder</title>
   <link rel="stylesheet" href="bootstrap.min.css" />
   <link rel="stylesheet" href="style.css" />
-</head>
+</head> 
 <body>
-  <main class="container">
-    <form id="cheats-form" class="mt-3">
-      <input id="game-title" type="text" class="form-control" id="game-title" placeholder="Enter Game Title" />
-      <button class="btn btn-success" type="submit">Create .cht File</button>
-      <button class="btn btn-primary" id="add-cheat-btn" type="button">Add Cheat</button>
-      <div id="cheats-render"></div>
-    </form>
-  </main>
+  <form id="cheats-form" class="mt-3 row g-0">
+    <aside class="col d-flex flex-column p-2">
+      <div class="position-sticky top-0 left-0">
+        <input id="game-title" type="text" class="form-control" id="game-title" placeholder="Enter Game Title" />
+        <button class="btn btn-success mt-2" type="submit">Create .cht File</button>
+        <button class="btn btn-primary mt-2" id="add-cheat-btn" type="button">Add Cheat</button>
+      </div>
+    </aside>
+    <main class="col-7 offset-1">
+      <div id="cheats-render" class="container"></div>
+    </main>
+  </form>
 
   <template id="cheat-inputs">
     <div class="card mt-3">
