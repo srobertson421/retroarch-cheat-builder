@@ -4,6 +4,7 @@ const cheatsFormEl = document.getElementById('cheats-form');
 const cheatsRenderEl = document.getElementById('cheats-render');
 const cheatInputsTemplate = document.getElementById('cheat-inputs');
 const gameTitleEl = document.getElementById('game-title');
+const fileUploadEl = document.getElementById('file-upload');
 
 const newCheatSchema = {
   description: '',
@@ -113,25 +114,30 @@ cheatsFormEl.addEventListener('change', e => {
   const realTarget = e.path[0];
 
   const parent = realTarget.parentElement.parentElement;
-  const parentId = parent.getAttribute('id');
+
+  if(parent) {
+    const parentId = parent.getAttribute('id');
+    
+    if(parentId) {
+      if(realTarget.tagName.toLowerCase() === 'input') {
+        if(parentId.includes('cheat_')) {
+          const cheatIndex = parseInt(parentId.split('_')[1]);
   
-  if(realTarget.tagName.toLowerCase() === 'input') {
-    if(parentId.includes('cheat_')) {
-      const cheatIndex = parseInt(parentId.split('_')[1]);
-
-      if(realTarget.getAttribute('type').toLowerCase() === 'text') {
-        return changeCheatDescription(realTarget.value, cheatIndex);
+          if(realTarget.getAttribute('type').toLowerCase() === 'text') {
+            return changeCheatDescription(realTarget.value, cheatIndex);
+          }
+          
+          if(realTarget.getAttribute('type').toLowerCase() === 'checkbox') {
+            return changeCheatEnable(realTarget.checked, cheatIndex);
+          }
+        }
+      } else if(realTarget.tagName.toLowerCase() === 'textarea') {
+        if(parentId.includes('cheat_')) {
+          const cheatIndex = parseInt(parentId.split('_')[1]);
+  
+          return changeCheatCode(realTarget.value, cheatIndex);
+        }
       }
-      
-      if(realTarget.getAttribute('type').toLowerCase() === 'checkbox') {
-        return changeCheatEnable(realTarget.checked, cheatIndex);
-      }
-    }
-  } else if(realTarget.tagName.toLowerCase() === 'textarea') {
-    if(parentId.includes('cheat_')) {
-      const cheatIndex = parseInt(parentId.split('_')[1]);
-
-      return changeCheatCode(realTarget.value, cheatIndex);
     }
   }
 });
@@ -142,6 +148,48 @@ gameTitleEl.addEventListener('change', e => {
 
   gameTitle = e.target.value
 });
+
+fileUploadEl.addEventListener('change', e => {
+  if(e.target.files.length > 0) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      extractCheatsFromFile(event.target.result, file.name);
+    };
+    reader.readAsText(file);
+  }
+});
+
+function extractCheatsFromFile(content, fileName) {
+  const newCheats = [];
+  let newCheat = { ...newCheatSchema };
+
+  const splitCheats = content.split('\n');
+  splitCheats.forEach(line => {
+    if(line.includes('_desc')) {
+      const value = line.split(' = ')[1].split('"')[1];
+      newCheat.description = value;
+    } else if(line.includes('_code')) {
+      const value = line.split(' = ')[1];
+      newCheat.code = value;
+    } else if(line.includes('_enable')) {
+      const value = line.split(' = ')[1];
+      newCheat.code = value === 'true';
+    }
+
+    if(
+      newCheat.description &&
+      newCheat.code
+    ) {
+      newCheats.push(newCheat);
+      newCheat = { ...newCheatSchema };
+    }
+  });
+
+  cheats.value = newCheats;
+  gameTitle = fileName.split('.')[0];
+  gameTitleEl.value = fileName.split('.')[0];
+}
 
 function createCheatFileContent() {
   const numOfCheats = cheats.value.length;
