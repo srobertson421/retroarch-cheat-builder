@@ -111,7 +111,7 @@ cheatsFormEl.addEventListener('click', e => {
 });
 
 cheatsFormEl.addEventListener('change', e => {
-  const realTarget = e.path[0];
+  const realTarget = e.composedPath()[0];
 
   const parent = realTarget.parentElement.parentElement;
 
